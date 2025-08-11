@@ -1,8 +1,8 @@
 from sqlalchemy import Column, String, Text
 from sqlalchemy.orm import relationship
 
-from app.core.constants import TITLE_MAX_LEN
-from app.core.db import Base
+from code.core.constants import TITLE_MAX_LEN
+from code.core.db import Base
 
 
 class Category(Base):

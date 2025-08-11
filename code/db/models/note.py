@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Text, Integer, ForeignKey, Table
 from sqlalchemy.orm import relationship
 
-from app.core.db import Base
+from code.core.db import Base
 
 
 note_category_association = Table(
@@ -18,6 +18,7 @@ class Note(Base):
         Integer, ForeignKey('user.id'),
         nullable=False
     )
+    author = relationship("User", back_populates="notes")
 
     categories = relationship(
         "Category",

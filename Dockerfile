@@ -1,19 +1,21 @@
 FROM python:3.12-slim
 
+RUN useradd --create-home --home-dir /app --shell /bin/bash app
 WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1
 
-COPY requirements/base.txt ./requirements/base.txt
+COPY requirements ./requirements
 
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements/base.txt
 
 COPY . .
+USER app
 
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+#COPY entrypoint.sh /code/entrypoint.sh
+#RUN chmod +x /code/entrypoint.sh
 
-EXPOSE 8000
+#EXPOSE 8000
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+#ENTRYPOINT ["/code/entrypoint.sh"]

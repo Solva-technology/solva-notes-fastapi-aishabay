@@ -3,7 +3,7 @@ from http import HTTPStatus
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.crud.note import note_crud
+from code.db.crud.note import note_crud
 
 
 async def check_note_exist(
