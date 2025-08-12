@@ -18,24 +18,24 @@ class CategoryAdmin(ModelView, model=Category):
 
 
 class NoteAdmin(ModelView, model=Note):
-    column_list = [Note.text, "author_email", "category_titles"]
-    # column_list = [Note.text, Note.author, Note.categories]
+    # column_list = [Note.text, "author_email", "category_titles"]
+    column_list = [Note.text, Note.author, Note.categories]
     name = "Note"
     name_plural = "Notes"
 
-    def author_email(self, obj):
-        return obj.author.email if obj.author else None
+    # def author_email(self, obj):
+    #     return obj.author.email if obj.author else None
+    #
+    # def category_titles(self, obj):
+    #     return ", ".join(cat.title for cat in obj.categories) if obj.categories else None
+    #
+    # author_email.__name__ = "Author"
+    # category_titles.__name__ = "Categories"
 
-    def category_titles(self, obj):
-        return ", ".join(cat.title for cat in obj.categories) if obj.categories else None
-
-    author_email.__name__ = "Author"
-    category_titles.__name__ = "Categories"
-
-    # column_formatters = {
-    #     Note.author: lambda model, attr: model.author.email if model.author else "",
-    #     # Note.categories: lambda model, attr: ", ".join(c.title for c in model.categories) if model.categories else "",
-    # }
+    column_formatters = {
+        Note.author: lambda model, attr: model.author.email if model.author else "",
+        # Note.categories: lambda model, attr: ", ".join(c.title for c in model.categories) if model.categories else "",
+    }
 
 
 # class NoteCategoryAssociationAdmin(ModelView, model=note_category_association):

@@ -14,3 +14,6 @@ class Category(Base):
         secondary="note_category_association",
         back_populates="categories"
     )
+
+    def __repr__(self):
+        return self.title

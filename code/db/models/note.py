@@ -25,3 +25,6 @@ class Note(Base):
         secondary=note_category_association,
         back_populates="notes"
     )
+
+    def __repr__(self):
+        return self.text
