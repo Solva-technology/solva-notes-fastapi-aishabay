@@ -16,5 +16,4 @@ COPY . .
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Run entrypoint as container command
 ENTRYPOINT ["/entrypoint.sh"]
