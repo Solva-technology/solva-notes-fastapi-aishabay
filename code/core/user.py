@@ -1,3 +1,7 @@
+from code.api.schemas.user import UserCreate
+from code.core.config import settings
+from code.core.db import get_async_session
+from code.db.models import User
 from typing import Optional, Union
 
 from fastapi import Depends, Request
@@ -7,11 +11,6 @@ from fastapi_users.authentication import (AuthenticationBackend,
                                           BearerTransport, JWTStrategy)
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from code.api.schemas.user import UserCreate
-from code.core.config import settings
-from code.core.db import get_async_session
-from code.db.models import User
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):

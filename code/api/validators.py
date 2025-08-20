@@ -1,13 +1,12 @@
+from code.db.crud.category import category_crud
+from code.db.crud.note import note_crud
+from code.db.models import User
 from http import HTTPStatus
 from typing import Optional
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-
-from code.db.crud.note import note_crud
-from code.db.crud.category import category_crud
-from code.db.models import User
 
 
 async def check_note_exist(

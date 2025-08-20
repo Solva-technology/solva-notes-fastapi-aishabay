@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, func, DateTime
+from code.core.config import settings
+
+from sqlalchemy import Column, DateTime, Integer, func
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
-
-from code.core.config import settings
 
 
 class PreBase:

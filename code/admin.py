@@ -1,13 +1,13 @@
+from code.core.config import settings
+from code.core.db import AsyncSessionLocal, engine
+from code.db.models import Category, Note, User
+
 from fastapi import FastAPI
 from fastapi_users.password import PasswordHelper
 from sqladmin import Admin, ModelView
 from sqladmin.authentication import AuthenticationBackend
 from sqlalchemy import select
 from starlette.requests import Request
-from starlette.responses import RedirectResponse
-
-from code.db.models import Category, Note, User
-from code.core.db import engine, AsyncSessionLocal
 
 
 class AdminAuth(AuthenticationBackend):
@@ -16,20 +16,17 @@ class AdminAuth(AuthenticationBackend):
         email, password = form["username"], form["password"]
 
         async with AsyncSessionLocal() as session:
-            user = await session.scalar(select(User).where(User.email == email))
+            user = await session.scalar(
+                select(User).where(User.email == email)
+            )
 
-        if not user:
+        if not user or not user.is_superuser:
             return False
 
         helper = PasswordHelper()
 
         if not helper.verify_and_update(password, user.hashed_password):
             return False
-
-        # token = await get_jwt_strategy().write_token(user_db)
-        print("----------------------------")
-        print(user.id)
-        print("----------------------------")
 
         request.session.update({"user_id": user.id})
         return True
@@ -51,12 +48,9 @@ class UserAdmin(ModelView, model=User):
     name_plural = "Users"
     column_list = [User.id, User.email]
     column_searchable_list = [User.email]
-    form_excluded_columns = [User.notes]
+    form_excluded_columns = [User.notes, User.created_at, User.updated_at]
     form_widget_args = {
         "notes": {"readonly": True},
-        "hashed_password": {"readonly": True},
-        "created_at": {"readonly": True},
-        "updated_at": {"readonly": True}
     }
 
 
@@ -66,11 +60,11 @@ class CategoryAdmin(ModelView, model=Category):
     column_list = [Category.title, Category.description]
     column_searchable_list = [Category.title, Category.description]
     column_sortable_list = [Category.title]
-    form_excluded_columns = [Category.notes, Category.created_at, Category.updated_at]
+    form_excluded_columns = [
+        Category.notes, Category.created_at, Category.updated_at
+    ]
     form_widget_args = {
         "notes": {"readonly": True},
-        # "created_at": {"readonly": True},
-        # "updated_at": {"readonly": True},
     }
 
 
@@ -81,23 +75,22 @@ class NoteAdmin(ModelView, model=Note):
     column_searchable_list = [Note.text]
     column_sortable_list = [Note.text]
     column_formatters = {
-        Note.author: lambda model, attr: model.author.email if model.author else "",
+        Note.author: lambda model, attr: model.author.email
+        if model.author else "",
     }
-    form_excluded_columns = [Note.author, Note.created_at, Note.updated_at]
-    # form_widget_args = {
-    #     "created_at": {"readonly": True},
-    #     "updated_at": {"readonly": True},
-    # }
+    form_excluded_columns = [Note.created_at, Note.updated_at]
 
 
-# def init_admin(fastapi_app: FastAPI):
-#     admin = Admin(
-#         app=fastapi_app,
-#         engine=engine,
-#         authentication_backend=AdminAuth(secret_key="supersecret")
-#     )
-#     admin.add_view(UserAdmin)
-#     admin.add_view(CategoryAdmin)
-#     admin.add_view(NoteAdmin)
-#
-#     return admin
+def init_admin(fastapi_app: FastAPI):
+    admin = Admin(
+        app=fastapi_app,
+        engine=engine,
+        authentication_backend=AdminAuth(
+            secret_key=settings.ADMIN_AUTH_SECRET_KEY
+        )
+    )
+    admin.add_view(UserAdmin)
+    admin.add_view(CategoryAdmin)
+    admin.add_view(NoteAdmin)
+
+    return admin

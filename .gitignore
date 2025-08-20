@@ -208,3 +208,7 @@ __marimo__/
 
 # created by macOS's Finder
 .DS_Store
+
+# hidden file automatically created by the Python interactive shell (REPL)
+#to store the command history from interactive sessions
+.python_history

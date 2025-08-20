@@ -1,6 +1,6 @@
-from fastapi import APIRouter
-
 from code.api.endpoints import category_router, note_router, user_router
+
+from fastapi import APIRouter
 
 main_router = APIRouter()
 

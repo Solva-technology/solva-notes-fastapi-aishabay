@@ -1,8 +1,7 @@
-from sqlalchemy import Column, Text, Integer, ForeignKey, Table
-from sqlalchemy.orm import relationship
-
 from code.core.db import Base
 
+from sqlalchemy import Column, ForeignKey, Integer, Table, Text
+from sqlalchemy.orm import relationship
 
 note_category_association = Table(
     'note_category_association',

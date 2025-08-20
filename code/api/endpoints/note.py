@@ -1,16 +1,14 @@
+from code.api.schemas.note import NoteCreateRequest, NoteDB, NoteUpdate
+from code.api.validators import check_note_exist
+from code.core.db import get_async_session
+from code.core.user import current_superuser, current_user
+from code.db.crud.note import note_crud
+from code.db.models import Category, Note, User
+
 from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette import status
-
-from code.api.schemas.note import NoteCreate, NoteCreateRequest, NoteUpdate, NoteDB
-from code.api.validators import check_note_exist
-from code.core.db import get_async_session
-from code.core.user import current_user, current_superuser
-from code.db.crud.note import note_crud
-from code.db.models import Category, Note
-from code.db.models import User
 
 router = APIRouter()
 
@@ -29,7 +27,9 @@ async def create_new_note(
     categories = result.scalars().all()
 
     if len(categories) != len(new_note.category_ids):
-        raise HTTPException(status_code=400, detail="One or more categories do not exist")
+        raise HTTPException(
+            status_code=400, detail="One or more categories do not exist"
+        )
 
     db_obj = Note(
         text=new_note.text,

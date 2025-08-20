@@ -1,10 +1,9 @@
+from code.db.models import User
 from typing import Optional
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from code.db.models import User
 
 
 class CRUDBase:

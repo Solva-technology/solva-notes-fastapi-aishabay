@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
     DATABASE_URL: str
     SECRET_WORD: str = 'SECRET'
+    ADMIN_AUTH_SECRET_KEY: str = 'SECRET'
 
     model_config = SettingsConfigDict(env_file=".env")
 

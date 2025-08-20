@@ -1,9 +1,8 @@
+from code.db.crud.base import CRUDBase
+from code.db.models import Note, User
 from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from code.db.crud.base import CRUDBase
-from code.db.models import Note, User
 
 
 class CRUDNote(CRUDBase):

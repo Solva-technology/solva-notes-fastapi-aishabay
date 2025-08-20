@@ -1,13 +1,13 @@
-from fastapi import APIRouter, HTTPException
-from fastapi.params import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from starlette import status
-
-from code.api.schemas.category import CategoryCreate, CategoryUpdate, CategoryDB
+from code.api.schemas.category import (CategoryCreate, CategoryDB,
+                                       CategoryUpdate)
 from code.api.validators import check_category_exist
 from code.core.db import get_async_session
 from code.core.user import current_superuser
 from code.db.crud.category import category_crud
+
+from fastapi import APIRouter
+from fastapi.params import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 
