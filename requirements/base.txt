@@ -4,6 +4,7 @@ dotenv==0.9.9
 fastapi==0.116.1
 fastapi-users==14.0.1
 fastapi-users-db-sqlalchemy==7.0.0
+itsdangerous==2.2.0
 pydantic-settings==2.10.1
 sqladmin==0.21.0
 SQLAlchemy==2.0.42

@@ -1,56 +1,103 @@
 from fastapi import FastAPI
+from fastapi_users.password import PasswordHelper
 from sqladmin import Admin, ModelView
+from sqladmin.authentication import AuthenticationBackend
+from sqlalchemy import select
+from starlette.requests import Request
+from starlette.responses import RedirectResponse
 
-from code.db.models import Category, Note, User, note_category_association
-from code.core.db import engine
+from code.db.models import Category, Note, User
+from code.core.db import engine, AsyncSessionLocal
+
+
+class AdminAuth(AuthenticationBackend):
+    async def login(self, request: Request) -> bool:
+        form = await request.form()
+        email, password = form["username"], form["password"]
+
+        async with AsyncSessionLocal() as session:
+            user = await session.scalar(select(User).where(User.email == email))
+
+        if not user:
+            return False
+
+        helper = PasswordHelper()
+
+        if not helper.verify_and_update(password, user.hashed_password):
+            return False
+
+        # token = await get_jwt_strategy().write_token(user_db)
+        print("----------------------------")
+        print(user.id)
+        print("----------------------------")
+
+        request.session.update({"user_id": user.id})
+        return True
+
+    async def logout(self, request: Request) -> bool:
+        request.session.clear()
+        return True
+
+    async def authenticate(self, request: Request) -> bool:
+        user_id = request.session.get("user_id")
+        if not user_id:
+            return False
+        async with AsyncSessionLocal() as session:
+            return await session.get(User, user_id)
 
 
 class UserAdmin(ModelView, model=User):
-    column_list = [User.id, User.email]
     name = "User"
     name_plural = "Users"
-
-
-class CategoryAdmin(ModelView, model=Category):
-    column_list = [Category.title, Category.description]
-    name = "Category"
-    name_plural = "Categories"
-
-
-class NoteAdmin(ModelView, model=Note):
-    # column_list = [Note.text, "author_email", "category_titles"]
-    column_list = [Note.text, Note.author, Note.categories]
-    name = "Note"
-    name_plural = "Notes"
-
-    # def author_email(self, obj):
-    #     return obj.author.email if obj.author else None
-    #
-    # def category_titles(self, obj):
-    #     return ", ".join(cat.title for cat in obj.categories) if obj.categories else None
-    #
-    # author_email.__name__ = "Author"
-    # category_titles.__name__ = "Categories"
-
-    column_formatters = {
-        Note.author: lambda model, attr: model.author.email if model.author else "",
-        # Note.categories: lambda model, attr: ", ".join(c.title for c in model.categories) if model.categories else "",
+    column_list = [User.id, User.email]
+    column_searchable_list = [User.email]
+    form_excluded_columns = [User.notes]
+    form_widget_args = {
+        "notes": {"readonly": True},
+        "hashed_password": {"readonly": True},
+        "created_at": {"readonly": True},
+        "updated_at": {"readonly": True}
     }
 
 
-# class NoteCategoryAssociationAdmin(ModelView, model=note_category_association):
-#     column_list = "__all__"
+class CategoryAdmin(ModelView, model=Category):
+    name = "Category"
+    name_plural = "Categories"
+    column_list = [Category.title, Category.description]
+    column_searchable_list = [Category.title, Category.description]
+    column_sortable_list = [Category.title]
+    form_excluded_columns = [Category.notes, Category.created_at, Category.updated_at]
+    form_widget_args = {
+        "notes": {"readonly": True},
+        # "created_at": {"readonly": True},
+        # "updated_at": {"readonly": True},
+    }
 
 
-app: FastAPI = None
+class NoteAdmin(ModelView, model=Note):
+    name = "Note"
+    name_plural = "Notes"
+    column_list = [Note.text, Note.author, Note.categories]
+    column_searchable_list = [Note.text]
+    column_sortable_list = [Note.text]
+    column_formatters = {
+        Note.author: lambda model, attr: model.author.email if model.author else "",
+    }
+    form_excluded_columns = [Note.author, Note.created_at, Note.updated_at]
+    # form_widget_args = {
+    #     "created_at": {"readonly": True},
+    #     "updated_at": {"readonly": True},
+    # }
 
-admin = None
 
-
-def init_admin(fastapi_app: FastAPI):
-    global app, admin
-    app = fastapi_app
-    admin = Admin(app=app, engine=engine)
-    admin.add_view(UserAdmin)
-    admin.add_view(CategoryAdmin)
-    admin.add_view(NoteAdmin)
+# def init_admin(fastapi_app: FastAPI):
+#     admin = Admin(
+#         app=fastapi_app,
+#         engine=engine,
+#         authentication_backend=AdminAuth(secret_key="supersecret")
+#     )
+#     admin.add_view(UserAdmin)
+#     admin.add_view(CategoryAdmin)
+#     admin.add_view(NoteAdmin)
+#
+#     return admin
