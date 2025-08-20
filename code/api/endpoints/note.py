@@ -3,11 +3,10 @@ from code.api.validators import check_note_exist
 from code.core.db import get_async_session
 from code.core.user import current_superuser, current_user
 from code.db.crud.note import note_crud
-from code.db.models import Category, Note, User
+from code.db.models import User
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from fastapi.params import Depends
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
@@ -22,30 +21,7 @@ async def create_new_note(
     session: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_user)
 ):
-    stmt = select(Category).where(Category.id.in_(new_note.category_ids))
-    result = await session.execute(stmt)
-    categories = result.scalars().all()
-
-    if len(categories) != len(new_note.category_ids):
-        raise HTTPException(
-            status_code=400, detail="One or more categories do not exist"
-        )
-
-    db_obj = Note(
-        text=new_note.text,
-        author_id=user.id,
-        categories=categories
-    )
-    session.add(db_obj)
-    await session.commit()
-    await session.refresh(db_obj)
-    return db_obj
-
-    # note_data = NoteCreate(
-    #     text=new_note.text,
-    #     # categories=categories
-    # )
-    # return await note_crud.create(note_data, session, user)
+    return await note_crud.create(new_note, session, user)
 
 
 @router.patch(
@@ -59,11 +35,6 @@ async def update_note_by_id(
     user: User = Depends(current_user)
 ):
     db_note = await check_note_exist(note_id=id, session=session, user=user)
-    # if db_note.author_id != user.id and not user.is_superuser:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Not authorized to update this note"
-    #     )
     return await note_crud.update(db_note, old_note, session, user)
 
 
