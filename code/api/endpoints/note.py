@@ -39,7 +39,7 @@ async def update_note_by_id(
 
 
 @router.get(
-    '/all',
+    '/',
     response_model=list[NoteDB],
     dependencies=[Depends(current_superuser)]
 )

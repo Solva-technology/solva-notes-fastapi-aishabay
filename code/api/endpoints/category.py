@@ -39,7 +39,7 @@ async def update_category_by_id(
 
 
 @router.get(
-    '/all',
+    '/',
     response_model=list[CategoryDB],
     dependencies=[Depends(current_superuser)]
 )
