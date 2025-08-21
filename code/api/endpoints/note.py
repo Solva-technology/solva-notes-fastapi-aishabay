@@ -12,63 +12,49 @@ from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter()
 
 
-@router.post(
-    '/',
-    response_model=NoteDB
-)
+@router.post("/", response_model=NoteDB)
 async def create_new_note(
     new_note: NoteCreateRequest,
     session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user)
+    user: User = Depends(current_user),
 ):
     return await note_crud.create(new_note, session, user)
 
 
-@router.patch(
-    '/{id}',
-    response_model=NoteDB
-)
+@router.patch("/{id}", response_model=NoteDB)
 async def update_note_by_id(
     id: int,
     old_note: NoteUpdate,
     session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user)
+    user: User = Depends(current_user),
 ):
     db_note = await check_note_exist(note_id=id, session=session, user=user)
     return await note_crud.update(db_note, old_note, session, user)
 
 
-@router.get(
-    '/',
-    response_model=list[NoteDB],
-    dependencies=[Depends(current_superuser)]
-)
+@router.get("/",
+            response_model=list[NoteDB],
+            dependencies=[Depends(current_superuser)])
 async def get_all_notes(
     session: AsyncSession = Depends(get_async_session),
 ):
     return await note_crud.get_multi(session=session)
 
 
-@router.get(
-    '/{id}',
-    response_model=NoteDB
-)
+@router.get("/{id}", response_model=NoteDB)
 async def get_note_by_id(
     id: int,
     session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user)
+    user: User = Depends(current_user),
 ):
     return await check_note_exist(note_id=id, session=session, user=user)
 
 
-@router.delete(
-    '/{id}',
-    response_model=NoteDB
-)
+@router.delete("/{id}", response_model=NoteDB)
 async def delete_note_by_id(
-        id: int,
-        session: AsyncSession = Depends(get_async_session),
-        user: User = Depends(current_user)
+    id: int,
+    session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_user),
 ):
     db_note = await check_note_exist(note_id=id, session=session, user=user)
     return await note_crud.remove(db_note, session)

@@ -1,8 +1,13 @@
 [flake8]
+inline-quotes = "
+multiline-quotes = """
+docstring-quotes = """
 max-line-length = 79
 exclude =
     venv,
     __pycache__,
+    .local,
+    site-packages,
     static,
     media,
     *.egg-info,
