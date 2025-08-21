@@ -67,6 +67,11 @@ class CategoryAdmin(ModelView, model=Category):
         "notes": {"readonly": True},
     }
 
+    column_formatters = {
+        Category.description: lambda m, a: (m.description[:50] + "...")
+        if m.description and len(m.description) > 50 else m.description
+    }
+
 
 class NoteAdmin(ModelView, model=Note):
     name = "Note"
@@ -75,8 +80,9 @@ class NoteAdmin(ModelView, model=Note):
     column_searchable_list = [Note.text]
     column_sortable_list = [Note.text]
     column_formatters = {
-        Note.author: lambda model, attr: model.author.email
-        if model.author else "",
+        Note.author: lambda m, a: m.author.email if m.author else "",
+        Note.text: lambda m, a: (m.text[:50] + "...")
+        if m.text and len(m.text) > 50 else m.text
     }
     form_excluded_columns = [Note.created_at, Note.updated_at]
 
