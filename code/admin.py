@@ -95,8 +95,12 @@ def init_admin(fastapi_app: FastAPI):
             secret_key=settings.ADMIN_AUTH_SECRET_KEY
         )
     )
-    admin.add_view(UserAdmin)
-    admin.add_view(CategoryAdmin)
-    admin.add_view(NoteAdmin)
+    models = [
+        UserAdmin,
+        CategoryAdmin,
+        NoteAdmin,
+    ]
+    for model in models:
+        admin.add_view(model)
 
     return admin
