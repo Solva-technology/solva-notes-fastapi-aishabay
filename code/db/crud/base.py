@@ -1,6 +1,8 @@
 from code.db.models import User
+from http import HTTPStatus
 from typing import Optional
 
+from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,6 +21,30 @@ class CRUDBase:
             select(self.model).where(self.model.id == obj_id)
         )
         return db_obj.scalars().first()
+
+    async def get_or_404(self, obj_id: int, session: AsyncSession):
+        obj = await self.get(obj_id, session)
+        if obj is None:
+            raise HTTPException(
+                status_code=HTTPStatus.NOT_FOUND,
+                detail=f"{self.model.__name__} not found"
+            )
+        return obj
+
+    async def get_owned_or_403(
+            self,
+            obj_id: int,
+            session: AsyncSession,
+            user: Optional[User],
+            owner_field: str = "author_id"
+    ):
+        obj = await self.get_or_404(obj_id, session)
+        if getattr(obj, owner_field) != user.id and not user.is_superuser:
+            raise HTTPException(
+                status_code=HTTPStatus.FORBIDDEN,
+                detail="Not authorized to access this resource",
+            )
+        return obj
 
     async def get_multi(
         self,
