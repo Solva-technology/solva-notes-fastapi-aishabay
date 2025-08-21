@@ -1,4 +1,5 @@
 from code.core.config import settings
+from code.core.constants import ADMIN_PANEL_TEXT_MAX_LEN
 from code.core.db import AsyncSessionLocal, engine
 from code.db.models import Category, Note, User
 
@@ -68,8 +69,10 @@ class CategoryAdmin(ModelView, model=Category):
     }
 
     column_formatters = {
-        Category.description: lambda m, a: (m.description[:50] + "...")
-        if m.description and len(m.description) > 50 else m.description
+        Category.description:
+            lambda m, a: (m.description[:ADMIN_PANEL_TEXT_MAX_LEN] + "...")
+        if m.description and len(m.description) > ADMIN_PANEL_TEXT_MAX_LEN
+            else m.description
     }
 
 
@@ -81,8 +84,8 @@ class NoteAdmin(ModelView, model=Note):
     column_sortable_list = [Note.text]
     column_formatters = {
         Note.author: lambda m, a: m.author.email if m.author else "",
-        Note.text: lambda m, a: (m.text[:50] + "...")
-        if m.text and len(m.text) > 50 else m.text
+        Note.text: lambda m, a: (m.text[:ADMIN_PANEL_TEXT_MAX_LEN] + "...")
+        if m.text and len(m.text) > ADMIN_PANEL_TEXT_MAX_LEN else m.text
     }
     form_excluded_columns = [Note.created_at, Note.updated_at]
 

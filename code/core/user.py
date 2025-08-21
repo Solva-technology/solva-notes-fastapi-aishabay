@@ -1,5 +1,6 @@
 from code.api.schemas.user import UserCreate
 from code.core.config import settings
+from code.core.constants import JWT_LIFETIME_SECONDS, PASSWORD_MAX_LEN
 from code.core.db import get_async_session
 from code.db.models import User
 from typing import Optional, Union
@@ -21,7 +22,10 @@ bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=settings.SECRET_WORD, lifetime_seconds=3600)
+    return JWTStrategy(
+        secret=settings.SECRET_WORD,
+        lifetime_seconds=JWT_LIFETIME_SECONDS
+    )
 
 
 auth_backend = AuthenticationBackend(
@@ -35,7 +39,7 @@ class UserManager(IntegerIDMixin, BaseUserManager):
     async def validate_password(
         self, password: str, user: Union[UserCreate, User]
     ) -> None:
-        if len(password) <= 7:
+        if len(password) <= PASSWORD_MAX_LEN:
             raise InvalidPasswordException(
                 reason="Пароль должен соответвовать нормам"
             )
