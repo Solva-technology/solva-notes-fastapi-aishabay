@@ -29,7 +29,7 @@ async def update_note_by_id(
     user: User = Depends(current_user),
 ):
     db_note = await check_note_exist(note_id=id, session=session, user=user)
-    return await note_crud.update(db_note, old_note, session, user)
+    return await note_crud.update(db_note, old_note, session)
 
 
 @router.get("/",

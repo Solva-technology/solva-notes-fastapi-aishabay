@@ -3,7 +3,6 @@ from http import HTTPStatus
 from typing import Optional
 
 from fastapi import HTTPException
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -72,15 +71,11 @@ class CRUDBase:
         self,
         db_obj,
         obj_in,
-        session: AsyncSession,
-        user: Optional[User] = None
+        session: AsyncSession
     ):
-        obj_data = jsonable_encoder(db_obj)
         update_data = obj_in.dict(exclude_unset=True)
-
-        for field in obj_data:
-            if field in update_data:
-                setattr(db_obj, field, update_data[field])
+        for field, value in update_data.items():
+            setattr(db_obj, field, value)
         session.add(db_obj)
         await session.commit()
         await session.refresh(db_obj)

@@ -6,7 +6,6 @@ from pydantic import BaseModel
 
 class NoteCreate(BaseModel):
     text: Optional[str] = None
-    # categories: List[Category] = []
 
 
 class NoteCreateRequest(BaseModel):
