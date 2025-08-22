@@ -36,9 +36,11 @@ async def update_note_by_id(
             response_model=list[NoteDB],
             dependencies=[Depends(current_superuser)])
 async def get_all_notes(
+    skip: int = 0,
+    limit: int = 100,
     session: AsyncSession = Depends(get_async_session),
 ):
-    return await note_crud.get_multi(session=session)
+    return await note_crud.get_multi(skip=skip, limit=limit, session=session)
 
 
 @router.get("/{id}", response_model=NoteDB)

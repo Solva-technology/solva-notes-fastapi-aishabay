@@ -47,9 +47,13 @@ class CRUDBase:
 
     async def get_multi(
         self,
+        skip: int,
+        limit: int,
         session: AsyncSession,
     ):
-        db_objs = await session.execute(select(self.model))
+        db_objs = await session.execute(
+            select(self.model).offset(skip).limit(limit)
+        )
         return db_objs.scalars().all()
 
     async def create(

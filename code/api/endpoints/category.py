@@ -42,9 +42,13 @@ async def update_category_by_id(
     dependencies=[Depends(current_superuser)]
 )
 async def get_all_categories(
+    skip: int = 0,
+    limit: int = 100,
     session: AsyncSession = Depends(get_async_session),
 ):
-    return await category_crud.get_multi(session=session)
+    return await category_crud.get_multi(
+        skip=skip, limit=limit, session=session
+    )
 
 
 @router.get(
