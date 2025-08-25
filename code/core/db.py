@@ -1,8 +1,8 @@
-from code.core.config import settings
-
-from sqlalchemy import Column, DateTime, Integer, func
+from sqlalchemy import Column, DateTime, func, Integer
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
+
+from code.core.config import settings
 
 
 class PreBase:
@@ -10,7 +10,7 @@ class PreBase:
     def __tablename__(cls):
         return cls.__name__.lower()
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)  # noqa: A003
 
     created_at = Column(
         DateTime(timezone=True),
@@ -35,7 +35,7 @@ engine = create_async_engine(
 )
 
 AsyncSessionLocal = sessionmaker(
-    bind=engine, class_=AsyncSession, expire_on_commit=False
+    bind=engine, class_=AsyncSession, expire_on_commit=False,
 )
 
 

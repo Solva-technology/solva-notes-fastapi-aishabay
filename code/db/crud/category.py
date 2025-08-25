@@ -1,8 +1,9 @@
-from code.db.crud.base import CRUDBase
-from code.db.models import Category, User
 from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from code.db.crud.base import CRUDBase
+from code.db.models import Category, User
 
 
 class CRUDCategory(CRUDBase):
@@ -10,7 +11,7 @@ class CRUDCategory(CRUDBase):
             self,
             obj_in,
             session: AsyncSession,
-            user: Optional[User] = None
+            user: Optional[User] = None,
     ):
         obj_in_data = obj_in.dict()
         db_obj = self.model(**obj_in_data)

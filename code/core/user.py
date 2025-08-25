@@ -1,17 +1,25 @@
+from typing import Optional, Union
+
+from fastapi import Depends, Request
+from fastapi_users import (
+    BaseUserManager,
+    FastAPIUsers,
+    IntegerIDMixin,
+    InvalidPasswordException,
+)
+from fastapi_users.authentication import (
+    AuthenticationBackend,
+    BearerTransport,
+    JWTStrategy,
+)
+from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from code.api.schemas.user import UserCreate
 from code.core.config import settings
 from code.core.constants import JWT_LIFETIME_SECONDS, PASSWORD_MAX_LEN
 from code.core.db import get_async_session
 from code.db.models import User
-from typing import Optional, Union
-
-from fastapi import Depends, Request
-from fastapi_users import (BaseUserManager, FastAPIUsers, IntegerIDMixin,
-                           InvalidPasswordException)
-from fastapi_users.authentication import (AuthenticationBackend,
-                                          BearerTransport, JWTStrategy)
-from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):
@@ -24,7 +32,7 @@ bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 def get_jwt_strategy() -> JWTStrategy:
     return JWTStrategy(
         secret=settings.SECRET_WORD,
-        lifetime_seconds=JWT_LIFETIME_SECONDS
+        lifetime_seconds=JWT_LIFETIME_SECONDS,
     )
 
 
@@ -37,23 +45,23 @@ auth_backend = AuthenticationBackend(
 
 class UserManager(IntegerIDMixin, BaseUserManager):
     async def validate_password(
-        self, password: str, user: Union[UserCreate, User]
+        self, password: str, user: Union[UserCreate, User],
     ) -> None:
         if len(password) <= PASSWORD_MAX_LEN:
             raise InvalidPasswordException(
-                reason="Пароль должен соответвовать нормам"
+                reason="Пароль должен соответвовать нормам",
             )
 
         if user.email in password:
             raise InvalidPasswordException(
-                reason="Пароль не должен содержать вашего email-а"
+                reason="Пароль не должен содержать вашего email-а",
             )
 
     async def on_after_register(
             self, user: User,
-            request: Optional[Request] = None
+            request: Optional[Request] = None,
     ):
-        print(f"Пользователь {user.email} зарегистрирован.")
+        pass
 
 
 async def get_user_manager(user_db=Depends(get_user_db)):

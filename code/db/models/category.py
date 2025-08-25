@@ -1,8 +1,8 @@
-from code.core.constants import TITLE_MAX_LEN
-from code.core.db import Base
-
 from sqlalchemy import Column, String, Text
 from sqlalchemy.orm import relationship
+
+from code.core.constants import TITLE_MAX_LEN
+from code.core.db import Base
 
 
 class Category(Base):
@@ -12,7 +12,7 @@ class Category(Base):
     notes = relationship(
         "Note",
         secondary="note_category_association",
-        back_populates="categories"
+        back_populates="categories",
     )
 
     def __repr__(self):

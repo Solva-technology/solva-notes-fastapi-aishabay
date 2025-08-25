@@ -1,14 +1,14 @@
-from code.core.config import settings
-from code.core.constants import ADMIN_PANEL_TEXT_MAX_LEN
-from code.core.db import AsyncSessionLocal, engine
-from code.db.models import Category, Note, User
-
 from fastapi import FastAPI
 from fastapi_users.password import PasswordHelper
 from sqladmin import Admin, ModelView
 from sqladmin.authentication import AuthenticationBackend
 from sqlalchemy import select
 from starlette.requests import Request
+
+from code.core.config import settings
+from code.core.constants import ADMIN_PANEL_TEXT_MAX_LEN
+from code.core.db import AsyncSessionLocal, engine
+from code.db.models import Category, Note, User
 
 
 class AdminAuth(AuthenticationBackend):
@@ -18,7 +18,7 @@ class AdminAuth(AuthenticationBackend):
 
         async with AsyncSessionLocal() as session:
             user = await session.scalar(
-                select(User).where(User.email == email)
+                select(User).where(User.email == email),
             )
 
         if not user or not user.is_superuser:
@@ -62,7 +62,7 @@ class CategoryAdmin(ModelView, model=Category):
     column_searchable_list = [Category.title, Category.description]
     column_sortable_list = [Category.title]
     form_excluded_columns = [
-        Category.notes, Category.created_at, Category.updated_at
+        Category.notes, Category.created_at, Category.updated_at,
     ]
     form_widget_args = {
         "notes": {"readonly": True},
@@ -72,7 +72,7 @@ class CategoryAdmin(ModelView, model=Category):
         Category.description:
             lambda m, a: (m.description[:ADMIN_PANEL_TEXT_MAX_LEN] + "...")
         if m.description and len(m.description) > ADMIN_PANEL_TEXT_MAX_LEN
-            else m.description
+            else m.description,
     }
 
 
@@ -85,7 +85,7 @@ class NoteAdmin(ModelView, model=Note):
     column_formatters = {
         Note.author: lambda m, a: m.author.email if m.author else "",
         Note.text: lambda m, a: (m.text[:ADMIN_PANEL_TEXT_MAX_LEN] + "...")
-        if m.text and len(m.text) > ADMIN_PANEL_TEXT_MAX_LEN else m.text
+        if m.text and len(m.text) > ADMIN_PANEL_TEXT_MAX_LEN else m.text,
     }
     form_excluded_columns = [Note.created_at, Note.updated_at]
 
@@ -95,8 +95,8 @@ def init_admin(fastapi_app: FastAPI):
         app=fastapi_app,
         engine=engine,
         authentication_backend=AdminAuth(
-            secret_key=settings.ADMIN_AUTH_SECRET_KEY
-        )
+            secret_key=settings.ADMIN_AUTH_SECRET_KEY,
+        ),
     )
     models = [
         UserAdmin,

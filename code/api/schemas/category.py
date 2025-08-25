@@ -15,7 +15,7 @@ class CategoryUpdate(BaseModel):
 
 
 class CategoryDB(CategoryCreate):
-    id: int
+    id: int  # noqa: A003
     created_at: datetime
     updated_at: datetime
 
