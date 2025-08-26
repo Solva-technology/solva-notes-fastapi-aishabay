@@ -30,4 +30,7 @@ class Note(Base):
     )
 
     def __repr__(self):
-        return self.text
+        return (
+            f"id={self.id}, text={self.text[:20]}, "
+            f"author_id={self.author_id}"
+        )

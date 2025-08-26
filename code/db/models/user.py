@@ -8,4 +8,4 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     notes = relationship("Note", back_populates="author")
 
     def __repr__(self):
-        return self.email
+        return f"id={self.id}, email={self.email}"

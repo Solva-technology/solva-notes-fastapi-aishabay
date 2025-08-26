@@ -16,4 +16,7 @@ class Category(Base):
     )
 
     def __repr__(self):
-        return self.title
+        return (
+            f"id={self.id}, title={self.title},"
+            f" description={self.description[:20]}"
+        )
