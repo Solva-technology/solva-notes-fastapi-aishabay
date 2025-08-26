@@ -5,7 +5,11 @@ from code.core.base import Base
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
-    notes = relationship("Note", back_populates="author")
+    notes = relationship(
+        "Note",
+        back_populates="author",
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self):
         return f"id={self.id}, email={self.email}"

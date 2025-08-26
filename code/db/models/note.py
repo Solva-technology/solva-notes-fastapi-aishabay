@@ -20,8 +20,10 @@ note_category_association = Table(
 
 class Note(Base):
     text = Column(Text, nullable=True)
-    author_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    author = relationship("User", back_populates="notes")
+    author_id = Column(
+        Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False,
+    )
+    author = relationship("User", back_populates="notes", passive_deletes=True)
 
     categories = relationship(
         "Category",

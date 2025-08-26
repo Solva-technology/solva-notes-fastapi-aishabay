@@ -21,7 +21,7 @@ SET row_security = off;
 --
 
 COPY public.alembic_version (version_num) FROM stdin;
-fd85ad40940b
+d73865b32500
 \.
 
 
