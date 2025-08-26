@@ -32,7 +32,7 @@ async def update_note_by_id(
     db_note = await check_note_exist(
         note_id=note_id, session=session, user=user,
     )
-    return await note_crud.update(db_note, old_note, session)
+    return await note_crud.update(db_note, old_note, session, user)
 
 
 @router.get(
@@ -44,8 +44,11 @@ async def get_all_notes(
     skip: int = 0,
     limit: int = 100,
     session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_user),
 ):
-    return await note_crud.get_multi(skip=skip, limit=limit, session=session)
+    return await note_crud.get_multi(
+        skip=skip, limit=limit, session=session, user=user,
+    )
 
 
 @router.get("/{id}", response_model=NoteDB)
@@ -66,4 +69,4 @@ async def delete_note_by_id(
     db_note = await check_note_exist(
         note_id=note_id, session=session, user=user,
     )
-    return await note_crud.remove(db_note, session)
+    return await note_crud.remove(db_note, session, user)

@@ -11,6 +11,7 @@ from code.api.validators import check_category_exist
 from code.core.db import get_async_session
 from code.core.user import current_superuser
 from code.db.crud.category import category_crud
+from code.db.models import User
 
 
 router = APIRouter()
@@ -24,8 +25,9 @@ router = APIRouter()
 async def create_new_category(
     new_category: CategoryCreate,
     session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_superuser),
 ):
-    return await category_crud.create(new_category, session)
+    return await category_crud.create(new_category, session, user=user)
 
 
 @router.patch(
@@ -37,11 +39,14 @@ async def update_category_by_id(
     category_id: int,
     old_category: CategoryUpdate,
     session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_superuser),
 ):
     db_category = await check_category_exist(
         category_id=category_id, session=session,
     )
-    return await category_crud.update(db_category, old_category, session)
+    return await category_crud.update(
+        db_category, old_category, session, user=user,
+    )
 
 
 @router.get(
@@ -53,9 +58,10 @@ async def get_all_categories(
     skip: int = 0,
     limit: int = 100,
     session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_superuser),
 ):
     return await category_crud.get_multi(
-        skip=skip, limit=limit, session=session,
+        skip=skip, limit=limit, session=session, user=user,
     )
 
 
@@ -65,9 +71,13 @@ async def get_all_categories(
     dependencies=[Depends(current_superuser)],
 )
 async def get_category_by_id(
-    category_id: int, session: AsyncSession = Depends(get_async_session),
+    category_id: int,
+    session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_superuser),
 ):
-    return await check_category_exist(category_id=category_id, session=session)
+    return await check_category_exist(
+        category_id=category_id, session=session, user=user,
+    )
 
 
 @router.delete(
@@ -78,8 +88,9 @@ async def get_category_by_id(
 async def delete_category_by_id(
     category_id: int,
     session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_superuser),
 ):
     db_category = await check_category_exist(
         category_id=category_id, session=session,
     )
-    return await category_crud.remove(db_category, session)
+    return await category_crud.remove(db_category, session, user)

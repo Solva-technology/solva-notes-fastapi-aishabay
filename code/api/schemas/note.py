@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 class NoteCreate(BaseModel):
     text: Optional[str] = None
+    author_id: Optional[int] = None
 
 
 class NoteCreateRequest(BaseModel):

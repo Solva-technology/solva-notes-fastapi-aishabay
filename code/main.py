@@ -5,12 +5,14 @@ from fastapi import FastAPI
 from code.admin import init_admin
 from code.api.routers import main_router
 from code.core.config import settings
-from logging_config import setup_logging
+from code.logging_config import setup_logging
+
+
+listener = setup_logging()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    listener = setup_logging()
     listener.start()
     yield
     listener.stop()
