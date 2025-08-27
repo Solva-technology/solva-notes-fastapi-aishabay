@@ -18,9 +18,9 @@ services:
     container_name: backend
     env_file:
       - .env
-    working_dir: /app
+    working_dir: /usr/src/app
     volumes:
-      - .:/app
+      - .:/usr/src/app
     tty: true
     ports:
       - "8000:8000"
