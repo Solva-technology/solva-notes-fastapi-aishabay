@@ -7,6 +7,8 @@ from logging.handlers import (
     TimedRotatingFileHandler,
 )
 
+from code.core.constants import APP_LOG_BACKUP_COUNT, ERRORS_LOG_BACKUP_COUNT
+
 
 def setup_logging(
     log_level: str = "DEBUG",
@@ -40,7 +42,7 @@ def setup_logging(
     file_handler = TimedRotatingFileHandler(
         os.path.join(log_dir, "app.log"),
         when="midnight",
-        backupCount=7,
+        backupCount=APP_LOG_BACKUP_COUNT,
         encoding="utf-8",
     )
     file_handler.setLevel(logging.INFO)
@@ -49,7 +51,7 @@ def setup_logging(
     error_handler = TimedRotatingFileHandler(
         os.path.join(log_dir, "errors.log"),
         when="W0",  # every Sunday
-        backupCount=4,
+        backupCount=ERRORS_LOG_BACKUP_COUNT,
         encoding="utf-8",
     )
     error_handler.setLevel(logging.ERROR)

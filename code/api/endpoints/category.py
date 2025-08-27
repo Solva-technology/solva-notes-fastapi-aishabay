@@ -8,6 +8,7 @@ from code.api.schemas.category import (
     CategoryUpdate,
 )
 from code.api.validators import check_category_exist
+from code.core.constants import LIMIT, SKIP
 from code.core.db import get_async_session
 from code.core.user import current_superuser
 from code.db.crud.category import category_crud
@@ -55,8 +56,8 @@ async def update_category_by_id(
     dependencies=[Depends(current_superuser)],
 )
 async def get_all_categories(
-    skip: int = 0,
-    limit: int = 100,
+    skip: int = SKIP,
+    limit: int = LIMIT,
     session: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_superuser),
 ):

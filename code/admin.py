@@ -6,7 +6,10 @@ from sqlalchemy import select
 from starlette.requests import Request
 
 from code.core.config import settings
-from code.core.constants import ADMIN_PANEL_TEXT_MAX_LEN
+from code.core.constants import (
+    ADMIN_PANEL_DESC_MAX_LEN,
+    ADMIN_PANEL_TEXT_MAX_LEN,
+)
 from code.core.db import AsyncSessionLocal, engine
 from code.db.models import Category, Note, User
 
@@ -70,8 +73,8 @@ class CategoryAdmin(ModelView, model=Category):
 
     column_formatters = {
         Category.description:
-            lambda m, a: (m.description[:ADMIN_PANEL_TEXT_MAX_LEN] + "...")
-        if m.description and len(m.description) > ADMIN_PANEL_TEXT_MAX_LEN
+            lambda m, a: (m.description[:ADMIN_PANEL_DESC_MAX_LEN] + "...")
+        if m.description and len(m.description) > ADMIN_PANEL_DESC_MAX_LEN
             else m.description,
     }
 

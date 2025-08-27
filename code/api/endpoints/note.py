@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from code.api.schemas.note import NoteCreateRequest, NoteDB, NoteUpdate
 from code.api.validators import check_note_exist
+from code.core.constants import LIMIT, SKIP
 from code.core.db import get_async_session
 from code.core.user import current_superuser, current_user
 from code.db.crud.note import note_crud
@@ -41,8 +42,8 @@ async def update_note_by_id(
     dependencies=[Depends(current_superuser)],
 )
 async def get_all_notes(
-    skip: int = 0,
-    limit: int = 100,
+    skip: int = SKIP,
+    limit: int = LIMIT,
     session: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_user),
 ):
