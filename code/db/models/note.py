@@ -1,34 +1,33 @@
-from sqlalchemy import Column, ForeignKey, Integer, Table, Text
-from sqlalchemy.orm import relationship
+from typing import Optional
+
+from sqlalchemy import ForeignKey, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from code.core.db import Base
 
 
-note_category_association = Table(
-    "note_category_association",
-    Base.metadata,
-    Column(
-        "note_id", Integer,
-        ForeignKey("note.id"), primary_key=True,
-    ),
-    Column(
-        "category_id", Integer,
-        ForeignKey("category.id"), primary_key=True,
-    ),
-)
+class NoteCategory(Base):
+    note_fk = mapped_column(ForeignKey("note.id"), primary_key=True)
+    category_fk = mapped_column(ForeignKey("category.id"), primary_key=True)
+
+    id = None
 
 
 class Note(Base):
-    text = Column(Text, nullable=True)
-    author_id = Column(
-        Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False,
+    text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    author_id: Mapped[int] = mapped_column(
+        ForeignKey("user.id", ondelete="CASCADE"),
+        nullable=False,
     )
-    author = relationship("User", back_populates="notes", passive_deletes=True)
-
-    categories = relationship(
-        "Category",
-        secondary=note_category_association,
+    author: Mapped["User"] = relationship(  # noqa: F821
         back_populates="notes",
+        passive_deletes=True,
+    )
+
+    categories: Mapped[list["Category"]] = relationship(  # noqa: F821
+        secondary="notecategory",
+        back_populates="notes",
+        uselist=True,
     )
 
     def __repr__(self):

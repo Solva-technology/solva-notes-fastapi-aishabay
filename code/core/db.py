@@ -1,6 +1,14 @@
-from sqlalchemy import Column, DateTime, func, Integer
+from datetime import datetime
+
+from sqlalchemy import DateTime, func, Integer
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
+from sqlalchemy.orm import (
+    declarative_base,
+    declared_attr,
+    Mapped,
+    mapped_column,
+    sessionmaker,
+)
 
 from code.core.config import settings
 
@@ -10,15 +18,15 @@ class PreBase:
     def __tablename__(cls):
         return cls.__name__.lower()
 
-    id = Column(Integer, primary_key=True)  # noqa: A003
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)  # noqa: A003
 
-    created_at = Column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         nullable=False,
     )
 
-    updated_at = Column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now(),

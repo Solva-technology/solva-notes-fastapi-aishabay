@@ -1,3 +1,3 @@
 from .category import Category
-from .note import Note, note_category_association
+from .note import Note
 from .user import User

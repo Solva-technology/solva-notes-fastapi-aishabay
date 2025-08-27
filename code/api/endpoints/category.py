@@ -42,7 +42,7 @@ async def update_category_by_id(
     user: User = Depends(current_superuser),
 ):
     db_category = await check_category_exist(
-        category_id=category_id, session=session,
+        category_id=category_id, session=session, user=user,
     )
     return await category_crud.update(
         db_category, old_category, session, user=user,
@@ -91,6 +91,6 @@ async def delete_category_by_id(
     user: User = Depends(current_superuser),
 ):
     db_category = await check_category_exist(
-        category_id=category_id, session=session,
+        category_id=category_id, session=session, user=user,
     )
     return await category_crud.remove(db_category, session, user)
